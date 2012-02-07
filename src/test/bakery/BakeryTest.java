@@ -9,10 +9,10 @@ import reachability.sharedInteger;
  *
  */
 public class BakeryTest {
-	static final int THREAD = 4;
+	static final int THREAD = 7;
 	public static void main(String[] args) {
 		sharedInteger CS = new sharedInteger(-1, "CS"); // CS
-		Lock b = new Bakery(THREAD); // false warmings
+		Lock b = new Bakery(THREAD); // false warnings
 		//Lock b = new SharedBakery(THREAD); // never terminate
 		
 		// threads
@@ -24,7 +24,7 @@ public class BakeryTest {
 		// join
 		try { for (int i = 0; i < THREAD; ++i) t[i].join();
 		} catch (InterruptedException e) {}
-		System.out.println("Program ends: " + CS.Read());
+		System.out.println("Program ends.");
 	}
 }
 

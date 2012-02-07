@@ -26,16 +26,15 @@ class Bakery implements Lock {
 		// step1
 		choosing[id] = true;
 		for (int j = 0; j < N; ++j) {
-			if (number[j] > number[id]) {
-				number[id] = number[j];
-			}
+			if (number[j] > number[id]) number[id] = number[j];
 		}
+		randomSleep(500);
 		number[id] = number[id] + 1;
 		choosing[id]= false;
 		
 		// step2
 		for (int j = 0; j < N; ++j) {
-			//while (choosing[j]) {System.out.print("");}; // process j in doorway
+			while (choosing[j]) {System.out.print("");}; // process j in doorway
 			while ((number[j] != 0) &&
 					((number[j] < number[id]) ||
 					((number[j] == number[id]) && j < id)))
@@ -56,7 +55,7 @@ class Bakery implements Lock {
 				System.exit(0);
 			}
 		}
-		randomSleep(50);
+		randomSleep(100);
 		inCS[id] = false;
 		number[id] = 0;
 	}
