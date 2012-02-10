@@ -1,45 +1,74 @@
 package test.read_write_lock;
 
+
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import reachability.TDThread;
 
 
-public class ReadWriteLockTest implements Runnable {
-	MySet s;
-	
-	public ReadWriteLockTest(MySet s) {
-		this.s = s;
-	}
-	
-	public void run() {
-		Random generator = new Random();
-		
-		int act = generator.nextInt(100);
-		if (act < 70) {
-			s.contains(generator.nextInt(100));
-		} else if (act < 80) {
-			s.size();
-		} else if (act < 85) {
-			s.isEmpty();
-		} else{ 
-			if (act < 96) {
-				s.add(generator.nextInt(100));
-			} else if (act < 99) {
-				s.remove(generator.nextInt(100));
-			} else {
-				s.clear();
-			}
-		}
-	}
-	
+public class ReadWriteLockTest {
 	static public void main(String args[]) {
-		ExecutorService pool = Executors.newCachedThreadPool();
-		MySet s = new MySet();
+		StringBuffer sharedBuffer = new StringBuffer();
+		ReadWriteLock lock = new ReadWriteLock();
+		Reader reader = new Reader(lock, sharedBuffer);
+		Writer writer = new Writer(lock, sharedBuffer);
 		
-		for (int i = 0; i < 100; ++i) {
-			pool.submit(new ReadWriteLockTest(s));
-		}
-		pool.shutdown();
+		try {
+			reader.start(); writer.start();
+		    reader.join(); writer.join();
+		} catch (InterruptedException e) { e.printStackTrace(); }
+		
+		System.out.println(sharedBuffer);
 	}
 }
+
+abstract class ReaderWriter extends TDThread {
+	static Random ran = new Random();
+	static final int SLEEP_RANGE = 500;
+	
+	public ReaderWriter(ReadWriteLock lock, StringBuffer sb, String s) {
+		super(s);
+		this.lock = lock;
+		this.sb = sb;
+	}
+	
+	@Override
+	public void run () {
+		int session = lock.getTicket();
+		this.sleep();
+		beginSession();
+		inSession(session);
+		endSession();
+	}
+	
+	void sleep() {
+		try {
+			Thread.sleep(1 + ran.nextInt(SLEEP_RANGE));
+		} catch (InterruptedException e) { e.printStackTrace();	}
+	}
+	
+	protected final ReadWriteLock lock;
+	protected final StringBuffer sb;	
+	protected abstract void beginSession();
+	protected abstract void inSession(int session);
+	protected abstract void endSession();
+}
+
+final class Reader extends ReaderWriter {
+	public Reader(ReadWriteLock lock, StringBuffer sb) { super(lock, sb, "Reader"); }
+	public void beginSession () { lock.beginRead(); }
+	protected void inSession(int session) {
+		sb.append(session + " Reader reads\n");
+	}
+	protected void endSession() { lock.endRead(); }
+}
+
+final class Writer extends ReaderWriter {
+	public Writer(ReadWriteLock lock, StringBuffer sb) { super(lock, sb, "Writer"); }
+	protected void beginSession() { lock.beginWrite(); }
+	protected void inSession(int session) {
+		sb.append(session + " Writer writes\n");
+	}
+	protected void endSession() { lock.endWrite(); }
+}
+
