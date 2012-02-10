@@ -43,8 +43,10 @@ class TestThread extends TDThread {
 	public void run() {
 		for (int i = 0; i < 100; ++i) {
 			b.requestCS(id);
+			
+			System.out.println("Thread " + id + " enters CS.");
 			CS.Write(id);
-			System.out.println(id + " writes " + CS.Read());
+			
 			b.releaseCS(id);
 		}
 	}

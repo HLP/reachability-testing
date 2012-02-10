@@ -5,7 +5,7 @@ import java.util.Random;
 class Bakery implements Lock {
 	final int N; // number of processes using this object
 	final Random ran = new Random();
-	final boolean[] choosing;
+	final boolean[] choosing ;
 	final int[] number;
 	final boolean[] inCS;
 
@@ -28,13 +28,13 @@ class Bakery implements Lock {
 		for (int j = 0; j < N; ++j) {
 			if (number[j] > number[id]) number[id] = number[j];
 		}
-		randomSleep(500);
+		randomSleep(300);
 		number[id] = number[id] + 1;
 		choosing[id]= false;
 		
 		// step2
 		for (int j = 0; j < N; ++j) {
-			while (choosing[j]) {System.out.print("");}; // process j in doorway
+			while (choosing[j]) {System.out.print("");}; // comment out to induce data racing
 			while ((number[j] != 0) &&
 					((number[j] < number[id]) ||
 					((number[j] == number[id]) && j < id)))
