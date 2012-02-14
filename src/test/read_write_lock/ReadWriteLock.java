@@ -22,14 +22,14 @@ public class ReadWriteLock {
 	int readers = 0;
 	int writers = 0;
 	sharedInteger ticket = new sharedInteger(0, "ticket");
-	int turn = 0;
 	
 	public int getTicket() {
+		//*
 		ticketLock.acquire();
 		int ticket = this.ticket.Read();
 		this.ticket.Write(ticket + 1);
 		ticketLock.release();
-		return ticket;
+		return ticket;//*/
 	}
 	
 	public void beginRead() {

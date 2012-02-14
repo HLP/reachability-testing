@@ -18,16 +18,16 @@ public class TDThread implements propertyParameters {
 		inner = new innerThread(runnable,threadName); this.runnable = runnable;
 		mode = (propertyReader.getInstance().getModeProperty());
 	}
-   public TDThread(ThreadGroup group, Runnable runnable) {
-  		inner = new innerThread(group,runnable); this.runnable = runnable;
-  		mode = (propertyReader.getInstance().getModeProperty());
+	public TDThread(ThreadGroup group, Runnable runnable) {
+		inner = new innerThread(group,runnable); this.runnable = runnable;
+		mode = (propertyReader.getInstance().getModeProperty());
 	}
 	public TDThread(ThreadGroup group, String threadName) {
- 		inner = new innerThread(group,threadName);
- 		mode = (propertyReader.getInstance().getModeProperty());
+		inner = new innerThread(group,threadName);
+		mode = (propertyReader.getInstance().getModeProperty());
 	}	
 	public TDThread(ThreadGroup group, Runnable runnable, String threadName) {
-	 	inner = new innerThread(group, runnable,threadName);this.runnable = runnable;
+		inner = new innerThread(group, runnable,threadName);this.runnable = runnable;
 		mode = (propertyReader.getInstance().getModeProperty());
 	}
 

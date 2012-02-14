@@ -20,7 +20,7 @@ class channelIDGenerator implements propertyParameters {
 	private HashMap replayIDsByName = new HashMap(); 
 	private int nextID = 0;
 	private boolean firstRT = true; // true if first execution of RT; 
-											  // set to false when reset is called
+									// set to false when reset is called
 	private propertyParameters.Mode mode = NONE;
 
 	private static final Object classLock = channelIDGenerator.class;
@@ -38,68 +38,68 @@ class channelIDGenerator implements propertyParameters {
 		if (mode == TRACE) {
 			// In RT mode, files are not opened until first ID is generated
 			try {
-	   		outputChannelNamesText = new PrintWriter(new FileOutputStream("ChannelID.txt"));
-	   		outputChannelNamesObject = new ObjectOutputStream(new FileOutputStream("ChannelID.dat"));
+				outputChannelNamesText = new PrintWriter(new FileOutputStream("ChannelID.txt"));
+				outputChannelNamesObject = new ObjectOutputStream(new FileOutputStream("ChannelID.dat"));
 			}
-      	catch (IOException e) {
-       		System.err.println("File not opened: " + e.toString());
-        		System.exit(1);
-     		}
+			catch (IOException e) {
+				System.err.println("File not opened: " + e.toString());
+				System.exit(1);
+			}
 		}
 		else if (mode == REPLAY || mode == TEST) {
 			try {
 				inputChannelNameAndIDs = new ObjectInputStream(new FileInputStream("ChannelID.dat"));
-  	  	  	}
+			}
 			catch (IOException e) {
 				System.err.println("ChannelID file not opened: " + e.toString());
 				System.exit(1);
-      	}
-      	ChannelNameAndID nameAndID;
-      	try {
+			}
+			ChannelNameAndID nameAndID;
+			try {
 				while (true) {
 					nameAndID = (ChannelNameAndID)inputChannelNameAndIDs.readObject();
-          		numberOfChannels = nameAndID.getID(); // last value of numberOfChannels will be used
+					numberOfChannels = nameAndID.getID(); // last value of numberOfChannels will be used
 					replayIDsByName.put(nameAndID.getName(),new Integer(numberOfChannels));
-         	}
-      	}
-      	catch (ClassNotFoundException e) {
-        		System.err.println("Error while reading ChannelID file: " + e.toString());
-        		System.exit(1);
-      	}	
-      	catch (EOFException eof) {
+				}
+			}
+			catch (ClassNotFoundException e) {
+				System.err.println("Error while reading ChannelID file: " + e.toString());
+				System.exit(1);
+			}	
+			catch (EOFException eof) {
 				try {
-		  			inputChannelNameAndIDs.close();
+					inputChannelNameAndIDs.close();
 				}
 				catch (Exception e) {
 					System.err.println("Error closing ChannelID file.");
 				}
-      	}
-      	catch (IOException e) {
-        		System.err.println("Error while reading ChannelID file: " + e.toString());
-        		System.exit(1);
-      	}
+			}
+			catch (IOException e) {
+				System.err.println("Error while reading ChannelID file: " + e.toString());
+				System.exit(1);
+			}
 		}		
-	
+
 	}
 
 
 	public static channelIDGenerator getInstance() { 
 		if (instance == null) {
 			synchronized(classLock) {
-      		if (instance == null)
-        			instance = new channelIDGenerator();
+				if (instance == null)
+					instance = new channelIDGenerator();
 			}
 		}
-      return instance;
-    }
+		return instance;
+	}
 
-   public synchronized void resetIDs() {
-   	nextID = 0;
-   	firstRT=false;
+	public synchronized void resetIDs() {
+		nextID = 0;
+		firstRT=false;
 		names.clear();
 		IDs.clear();
-   }
-   
+	}
+
 	private synchronized int getNextID() {return ++nextID;}
 
 	private synchronized boolean containsName(String stringID) {
@@ -107,18 +107,18 @@ class channelIDGenerator implements propertyParameters {
 	}
 
 	private synchronized void putName(String name, Integer num) {
-	// associates name with num
-			names.put(name, num);
+		// associates name with num
+		names.put(name, num);
 	}
 
 
 	private synchronized int getNum(String name) {
-	// gets ID associated with name in names
+		// gets ID associated with name in names
 		return ((Integer)names.get(name)).intValue();
 	}
 
 	public synchronized int getChannelID(String name) {
-	// gets ID associated with name in IDs (global ID)
+		// gets ID associated with name in IDs (global ID)
 		if (mode == TRACE || mode == RT)
 			return ((Integer)IDs.get(name)).intValue();
 		else
@@ -127,24 +127,24 @@ class channelIDGenerator implements propertyParameters {
 	}
 
 	private synchronized void generateID(String name) {
-	// associates name with num
+		// associates name with num
 		int channelID = 0;
 		if (mode == TRACE || mode == RT) { 
 			if (mode == RT && firstRT && outputChannelNamesText==null && outputChannelNamesObject==null) {
-			// In RT mode, files are not opened until first ID is generated
+				// In RT mode, files are not opened until first ID is generated
 				try {
-		   		outputChannelNamesText = new PrintWriter(new FileOutputStream("ChannelID.txt"));
-	   			outputChannelNamesObject = new ObjectOutputStream(new FileOutputStream("ChannelID.dat"));
+					outputChannelNamesText = new PrintWriter(new FileOutputStream("ChannelID.txt"));
+					outputChannelNamesObject = new ObjectOutputStream(new FileOutputStream("ChannelID.dat"));
 				}
-   	   	catch (IOException e) {
-      	 		System.err.println("File not opened: " + e.toString());
-        			System.exit(1);
-	     		}			
+				catch (IOException e) {
+					System.err.println("File not opened: " + e.toString());
+					System.exit(1);
+				}			
 			}
 			channelID = getNextID();
 			IDs.put(name, new Integer(channelID));
 			if (firstRT) {
-		   	outputChannelNamesText.println(name + " " + channelID);
+				outputChannelNamesText.println(name + " " + channelID);
 				outputChannelNamesText.flush();
 			}
 			if (firstRT) {
@@ -155,7 +155,7 @@ class channelIDGenerator implements propertyParameters {
 				} catch (IOException e) {
 					System.out.println("Error writing ChannelID file");
 					System.exit(1);
-				  }
+				}
 			}
 		}
 		// channelID is not returned so no need to get it here 
@@ -188,18 +188,18 @@ class channelIDGenerator implements propertyParameters {
 
 	public synchronized String getIDFromUserName(String userName) {
 		if (!containsName(userName)){
-				// first thread of this class
-				putName(userName, new Integer(1)); // add to instance table
-			}
+			// first thread of this class
+			putName(userName, new Integer(1)); // add to instance table
+		}
 		else {
 			// at least one instance already exists
 			throw new InvalidChannelName("Use of duplicate thread name: " + "\""+userName+"\"");
 		}
 		generateID(userName); // ID used during trace to collect events of channel i
-      return userName+"1";
+		return userName+"1";
 	}
 
-  }
+}
 
 final class InvalidChannelName extends InvalidIDException {
 	InvalidChannelName() { }

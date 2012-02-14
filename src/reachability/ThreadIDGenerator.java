@@ -41,76 +41,76 @@ class ThreadIDGenerator implements propertyParameters {
 		maxNumberOfThreads = (propertyReader.getInstance().getMaxThreadsProperty());
 		if (traceOrReplay == TRACE || traceOrReplay == RT) {
 			try {
-	   		outputThreadIDsText = new PrintWriter(new FileOutputStream("ThreadID.txt"));
-	   		outputThreadIDsObject = new ObjectOutputStream(new FileOutputStream("ThreadID.dat"));
+				outputThreadIDsText = new PrintWriter(new FileOutputStream("ThreadID.txt"));
+				outputThreadIDsObject = new ObjectOutputStream(new FileOutputStream("ThreadID.dat"));
 			}
-      	catch (IOException e) {
-        		System.err.println("File not opened: " + e.toString());
-        		System.exit(1);
-      	}
-      	if (firstRT) {
-      		outputThreadIDsText.println("(*This file is read-only; the Thread IDs cannot be changed.*)");
-      		outputThreadIDsText.flush();
-      	}
+			catch (IOException e) {
+				System.err.println("File not opened: " + e.toString());
+				System.exit(1);
+			}
+			if (firstRT) {
+				outputThreadIDsText.println("(*This file is read-only; the Thread IDs cannot be changed.*)");
+				outputThreadIDsText.flush();
+			}
 		}
 		else if (traceOrReplay == REPLAY || traceOrReplay == TEST || traceOrReplay == SPECTEST) {
 			try {
 				inputThreadNameAndIDs = new ObjectInputStream(new FileInputStream("ThreadID.dat"));
-  	  	  	}
+			}
 			catch (IOException e) { // won't be there for first pass of RT
-			   //if (traceOrReplay == REPLAY || traceOrReplay == TEST) {
-					System.out.println("ThreadID file not opened: " + e.toString());
-					System.exit(1);
+				//if (traceOrReplay == REPLAY || traceOrReplay == TEST) {
+				System.out.println("ThreadID file not opened: " + e.toString());
+				System.exit(1);
 				//}
-      	}
-      	ThreadNameAndID nameAndID;
-      	try {
+			}
+			ThreadNameAndID nameAndID;
+			try {
 				//System.out.println("Reading ThreadIDs");
 				while (true) {
 					nameAndID = (ThreadNameAndID)inputThreadNameAndIDs.readObject();
-          		numberOfThreads = nameAndID.getID(); // last value of numberOfThreads will be used
+					numberOfThreads = nameAndID.getID(); // last value of numberOfThreads will be used
 					replayIDsByName.put(nameAndID.getName(),new Integer(numberOfThreads));
 					replayIDsByID.put(new Integer(numberOfThreads),nameAndID.getName());
-         	}
-      	}
-      	catch (ClassNotFoundException e) {
-        		System.out.println("Error while reading ThreadID file: " + e.toString());
-        		System.exit(1);
-      	}	
-      	catch (EOFException eof) {
+				}
+			}
+			catch (ClassNotFoundException e) {
+				System.out.println("Error while reading ThreadID file: " + e.toString());
+				System.exit(1);
+			}	
+			catch (EOFException eof) {
 				try {
 					//System.out.println("number of Threads is " + numberOfThreads);
-		  			inputThreadNameAndIDs.close();
+					inputThreadNameAndIDs.close();
 				}
 				catch (Exception e) {
 					System.out.println("Error closing ThreadID file.");
 				}
-      	}
-      	catch (IOException e) {
-        		System.out.println("Error while reading ThreadID file: " + e.toString());
-        		System.exit(1);
-      	}
+			}
+			catch (IOException e) {
+				System.out.println("Error while reading ThreadID file: " + e.toString());
+				System.exit(1);
+			}
 			// if numberOfThreads is n then we need n+1 elements since IDs are 1..numberOfThreads.
 		}   
 	}
 
 	public static ThreadIDGenerator getInstance() { 
 		synchronized(classLock) {
-      	if (instance == null)
-        		instance = new ThreadIDGenerator();
+			if (instance == null)
+				instance = new ThreadIDGenerator();
 		}
-      return instance;
-    }
-   public synchronized void resetIDs() {
-   	saveNumberOfThreads = numberOfThreads;
-   	numberOfThreads = 0;
-   	firstRT = false;
+		return instance;
+	}
+	public synchronized void resetIDs() {
+		saveNumberOfThreads = numberOfThreads;
+		numberOfThreads = 0;
+		firstRT = false;
 		names.clear();
 		IDs.clear();
 		replayIDsByName.clear();
 		replayIDsByID.clear();
-   }
-   
+	}
+
 	private synchronized int getNextID() {return ++numberOfThreads;}
 
 	private synchronized boolean containsName(String stringID) {
@@ -118,18 +118,18 @@ class ThreadIDGenerator implements propertyParameters {
 	}
 
 	private synchronized void putName(String name, Integer num) {
-	// associates name with num
+		// associates name with num
 		names.put(name, num);
 	}
 
 	private synchronized int getNum(String name) {
-	// gets num associated with name
+		// gets num associated with name
 		return ((Integer)names.get(name)).intValue();
 	}
 
 	private synchronized int generateID(String name, boolean isThread) {
-	
-	// associates name with num
+
+		// associates name with num
 		int threadID=0;
 		if (traceOrReplay == TRACE || traceOrReplay == RT) { 
 			threadID = getNextID();
@@ -142,28 +142,28 @@ class ThreadIDGenerator implements propertyParameters {
 					outputThreadIDsObject.writeObject(nameAndID);
 					outputThreadIDsObject.flush();
 				} 	catch (IOException e) {
-						System.out.println("Error writing ThreadID file");
-						System.exit(1);
-					}
+					System.out.println("Error writing ThreadID file");
+					System.exit(1);
+				}
 			}
 		}
 		else if (traceOrReplay == REPLAY || traceOrReplay == TEST || traceOrReplay == SPECTEST) {
 			threadID = ((Integer)replayIDsByName.get(name)).intValue();
 		}
 		if (isThread && threadID > maxNumberOfThreads) {
-		  	System.out.println("Error: Too many threads/synchronization objects. The default maximum is 15.  ");
-		  	System.out.println("       Use -DmaxThreads=n to raise the limit. (Or try to define all threads ");
-		  	System.out.println("       before defining any synchronization objects (semaphores, monitors, etc)).");
-		  	System.exit(1);
+			System.out.println("Error: Too many threads/synchronization objects. The default maximum is 15.  ");
+			System.out.println("       Use -DmaxThreads=n to raise the limit. (Or try to define all threads ");
+			System.out.println("       before defining any synchronization objects (semaphores, monitors, etc)).");
+			System.exit(1);
 		}
 		return threadID;
 	}
 
 	public synchronized String getName(int ID) {
-			if (traceOrReplay == TRACE || traceOrReplay == RT)
-				return (String)(IDs.get(new Integer(ID)));
-			else
-				return (String)(replayIDsByID.get(new Integer(ID)));		
+		if (traceOrReplay == TRACE || traceOrReplay == RT)
+			return (String)(IDs.get(new Integer(ID)));
+		else
+			return (String)(replayIDsByID.get(new Integer(ID)));		
 	}
 
 	public synchronized int getID(String stringID,boolean isThread) {
@@ -175,36 +175,36 @@ class ThreadIDGenerator implements propertyParameters {
 		// also call to get ID during RT (for use as index into vector timestamps)
 		String nextName=null;
 		if (!containsName(stringID)){
-				// first thread of this class
-				nextName = stringID + "1"; // next className+instance# for identifier table
-				putName(stringID, new Integer(1)); // add to instance table
-			}
+			// first thread of this class
+			nextName = stringID + "1"; // next className+instance# for identifier table
+			putName(stringID, new Integer(1)); // add to instance table
+		}
 		else {
-				// at least one instance already exists
+			// at least one instance already exists
 			int nextNum = getNum(stringID)+1;
 			nextName = stringID + nextNum; // next className+instance# for identifier table
 			putName(stringID,new Integer(nextNum)); // add to instance table
 		}
-      return generateID(nextName,isThread);
+		return generateID(nextName,isThread);
 	}
 
 	public synchronized int getIDFromUserName(String userName,boolean isThread) {
-	// isThread is true if it is a thread calling to get an ID. Synch objects
-	// also call to get ID during RT (for use as index into vector timestamps)
+		// isThread is true if it is a thread calling to get an ID. Synch objects
+		// also call to get ID during RT (for use as index into vector timestamps)
 		if (!containsName(userName)){
-				// first thread of this class
-				putName(userName, new Integer(1)); // add to instance table
-			}
+			// first thread of this class
+			putName(userName, new Integer(1)); // add to instance table
+		}
 		else {
 			// at least one instance already exists
 			throw new InvalidThreadName("Use of duplicate thread name: " + "\""+userName+"\"");
 		}
-      return generateID(userName,isThread);
+		return generateID(userName,isThread);
 	}
 
 	// if tracing, it's number of IDs that have been created; if replay or test, it's read from ThreadID file.
 	public synchronized int getNumberOfThreads() {
-	   if( traceOrReplay == RT) 
+		if( traceOrReplay == RT) 
 			return saveNumberOfThreads;
 		else
 			return numberOfThreads;
@@ -224,7 +224,7 @@ class ThreadIDGenerator implements propertyParameters {
 	}
 
 
-  }
+}
 
 final class InvalidThreadName extends InvalidIDException {
 	InvalidThreadName() { }

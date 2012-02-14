@@ -275,7 +275,9 @@ public class vectorTimeStamp implements Serializable, Cloneable {
 		//timestampRC ts = ((timestampRC)vectorTS.get(new Integer(ID)));
 		timestampRC ts = ((timestampRC)vectorTS.get(integerSpace.get(ID)));
 		if (ts == null)
-			return -1;
+			//return -1;
+			// Yenjung
+			return 0;
 		else
 			return ts.clockValue;	
 	}

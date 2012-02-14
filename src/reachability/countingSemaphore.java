@@ -385,7 +385,10 @@ public final class countingSemaphore extends semaphore implements propertyParame
 
 						// update caller with semaphore's timestamp: receive <------ send
 						((innerThread)Thread.currentThread()).updateVectorTS(getVectorTS());
-					}				
+					}		
+					// Yenjung: stores state and TS here
+					ThreadPrintTS();
+					// Yenjung: end of stores state and TS here
 					return;
 				}
 				/*deadlock detection */
@@ -406,6 +409,9 @@ public final class countingSemaphore extends semaphore implements propertyParame
 						+" completed " + semaphoreName + "." + "P()");
 			}
 		} // end synchronized (o)
+		// Yenjung: stores state and TS here
+		ThreadPrintTS();
+		// Yenjung: end of stores state and TS here
 	} // end P
 
 	public void release() {V();}
@@ -504,7 +510,10 @@ public final class countingSemaphore extends semaphore implements propertyParame
 				if (mode == REPLAY)
 					control.releasePermit();
 				else if (mode == TRACE)
-					control.trace(((innerThread)Thread.currentThread()).getID()); 
+					control.trace(((innerThread)Thread.currentThread()).getID());
+				// Yenjung: stores state and TS here
+				ThreadPrintTS();
+				// Yenjung: end of stores state and TS here
 				return;
 			}
 			if (waitingP.size() > 0) { // this should always be true since P()'s have blocked
@@ -545,6 +554,9 @@ public final class countingSemaphore extends semaphore implements propertyParame
 					if (detectDeadlock == DETECTIONON  && mode == RT || mode == TRACE) {
 						innerThread.decNumBlockedThreads();
 					}
+					// Yenjung: stores state and TS here
+					ThreadPrintTS();
+					// Yenjung: end of stores state and TS here
 				}
 			}  // end synchronized this
 		}	
@@ -634,6 +646,12 @@ public final class countingSemaphore extends semaphore implements propertyParame
 			try {o.wait();} catch (InterruptedException ex) {}
 		} // end synchronized (o)
 	} // end VP()
+	
+	// Yenjung
+	private void ThreadPrintTS() {
+		//innerThread t = (innerThread)Thread.currentThread();
+		//System.out.println(t.getThreadName() + ": " + t.getVectorTS());
+	}
 
 
 }// end  countingSemaphore
