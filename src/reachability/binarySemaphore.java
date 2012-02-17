@@ -291,6 +291,7 @@ public final class binarySemaphore extends semaphore implements propertyParamete
 	public void waitS() {P();} 		// wait() is final in class Object and cannot be overridden
 	public void P() {
 		int callerForReceiveEvent = -1;
+
 		if (mode == REPLAY)
 			control.requestPermit(((innerThread)Thread.currentThread()).getID()); 
 		else if (randomDelay == ON && mode == TRACE) {
@@ -336,6 +337,7 @@ public final class binarySemaphore extends semaphore implements propertyParamete
 				deadlockWatchdog.changeStatus(((innerThread)Thread.currentThread()),"running");
 			}
 		}
+		
 		queueObject o = new queueObject(); // each thread blocks on its own conditionVar object
 		synchronized (o) { //lock conditionVar 
 			synchronized (this) { // lock semaphore

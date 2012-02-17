@@ -551,6 +551,7 @@ propertyParameters, monitorEventTypeParameters, Control {
 			if (!(mode == RT && RTTracing && RTAllRecollected))  { // don't bother requesting if now in RT trace mode
 				requestPermitMessage  m = new requestPermitMessage(channelName,callerVersionNumber,calledID);
 				Boolean isOld = (Boolean) requestSendPermitMS[ID].call(m);
+				
 				return isOld.booleanValue(); // true if this is an old send during RT
 			}
 			else { 

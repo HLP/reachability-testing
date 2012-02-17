@@ -10,6 +10,7 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 	// a shared variable wrapper for ints
 
 	int value;
+	boolean isInit = true; //Yenjung
 
 	private propertyParameters.Mode mode = NONE;  // user chooses trace or replay or none
 	private propertyParameters.Controllers numControllers = SINGLE;
@@ -237,7 +238,7 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 		int callerForReceiveEvent = -1;
 		//replyForRequestPermit ret = null;
 		int ret = -1;
-
+		/* Yenjung
 		if (mode == RT) {
 			((innerThread)Thread.currentThread()).updateIntegerTS();
 
@@ -264,6 +265,7 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 			//isChanged = ret.getIsChanged();
 			//System.out.println(((innerThread)Thread.currentThread()).getID()+" received receivePermitMS");
 		}
+		
 		synchronized (this) { // lock variable
 			if (mode == RT) {
 				if (callerForReceiveEvent==-2) {
@@ -291,11 +293,12 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 
 				// update caller with variable's timestamp: receive <------ send
 				((innerThread)Thread.currentThread()).updateVectorTS(getVectorTS());
-			}				
+			}
+			Yenjung */				
 			// Yenjung: dump value and TS
 			//dumpInfo();
 			return value;
-		} // end synchronized (this) 
+		//} // end synchronized (this) 
 	} // end P
 
 
@@ -303,6 +306,13 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 		int callerForReceiveEvent = -1;
 		//replyForRequestPermit ret = null;
 		int ret = -1;
+		
+		// Yenjung
+		//Yenjung
+		if (isInit) {
+			isInit = false;
+			dumpInfo();
+		}
 
 		if (mode == RT) {
 			((innerThread)Thread.currentThread()).updateIntegerTS();
@@ -376,7 +386,7 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 	private void dumpInfo() {
 		System.out.println("<ID=" + getID() + ", value=" + value + ", TS="+ vectorTS + ">");
 		//PartialOrderDumper.getInstance().append("<ID=" + getID() + ", value=" + value + ", TS="+ vectorTS + ">\n");
-		PartialOrderDumper.getInstance().append(getID() + " " + value + " ");
+		PartialOrderDumper.getInstance().append(getName() + " " + value + " ");
 		PartialOrderDumper.getInstance().append(vectorTS.getIntegerTS(1) + " " + vectorTS.getIntegerTS(2) + "\n");
 	}
 }// end  sharedInteger

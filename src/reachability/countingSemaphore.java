@@ -313,7 +313,7 @@ public final class countingSemaphore extends semaphore implements propertyParame
 		}
 		else if (mode == RT) {
 			((innerThread)Thread.currentThread()).updateIntegerTS();
-
+			
 			String label = "'"+semaphoreName + ":" + "P" + "[S]";
 
 			// label is used as the Program Counter for the symmetry reduction. 	
@@ -331,9 +331,7 @@ public final class countingSemaphore extends semaphore implements propertyParame
 					-1,semaphoreName + ":" + "P",-1,
 					UNACCEPTED_ASYNCH_SEND, ((innerThread)Thread.currentThread()).getVectorTS(),label, false,nullOpenList,SEMAPHORE_CALL);
 			control.trace(e); 
-
 			control.msgReceived();
-
 
 			// callerForReceiveEvent is not used here
 			// Note: request made by caller/current thread; version number ignored since
@@ -343,7 +341,7 @@ public final class countingSemaphore extends semaphore implements propertyParame
 			if (detectDeadlock == DETECTIONON && mode == RT || mode == TRACE) {
 				deadlockWatchdog.changeStatus(((innerThread)Thread.currentThread()),"calling P operation of "+semaphoreName);
 			}
-			callerForReceiveEvent = control.requestReceivePermitMS(((innerThread)Thread.currentThread()).getID(),getID(),semaphoreName + ":" + "P",getVersionNumber());  		
+			callerForReceiveEvent = control.requestReceivePermitMS(((innerThread)Thread.currentThread()).getID(),getID(),semaphoreName + ":" + "P",getVersionNumber());
 			if (detectDeadlock == DETECTIONON && mode == RT || mode == TRACE) {
 				deadlockWatchdog.changeStatus(((innerThread)Thread.currentThread()),"running");
 			}

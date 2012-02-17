@@ -1,5 +1,13 @@
 package reachability;
+
+
 import java.lang.reflect.*;
+
+import test.PartialOrderReader;
+
+import lattice.Computation;
+import lattice.Evaluable;
+import lattice.traveler.LatticeTraveler;
 
 public final class RTDriver implements propertyParameters {
 	// the driver for RT			
@@ -16,6 +24,8 @@ public final class RTDriver implements propertyParameters {
 	static private propertyParameters.ClientServer clientServer = propertyReader.getInstance().getClientServerProperty();
 	static private int hash = propertyReader.getInstance().getHashProperty(); // progress displayed every hash executions, user can set this value
 
+	static Class unknown = null;
+	
 	public static void main (String args[]) {
 		try {
 			if (args.length == 0) {
@@ -43,7 +53,7 @@ public final class RTDriver implements propertyParameters {
 				clientServerID = new String();
 
 			msgTracingAndReplay.setUsingRTDriver();
-			Class unknown = null;
+			//Class unknown = null;
 			try {
 				unknown = Class.forName(args[0]);
 			} catch (Exception e) {
@@ -121,7 +131,8 @@ public final class RTDriver implements propertyParameters {
 				//if (i%hash==0) System.out.println(i+"/"+collected);
 				System.out.println(i+"/"+collected);
 			}
-		} catch (Exception e) {e.printStackTrace();};
+			
+		} catch (Exception e) {e.printStackTrace();}
 	}
 
 	final static class RTWatchDog extends Thread {
@@ -166,12 +177,29 @@ public final class RTDriver implements propertyParameters {
 					else
 						System.out.println("Reachability Testing completed.");
 					System.out.println("  Executions:"+i+" / Sequences Collected:"+collected); // +"/"+transitionCount+"/"+eventCount);
-					System.out.println("  Elapsed time in minutes: " + sw.elapsedMinutes());
+					//System.out.println("  Elapsed time in minutes: " + sw.elapsedMinutes());
 					System.out.println("  Elapsed time in seconds: " + sw.elapsedSeconds());
-					System.out.println("  Elapsed time in milliseconds: " + sw.elapsedMillis());
+					//System.out.println("  Elapsed time in milliseconds: " + sw.elapsedMillis());
 					System.out.flush();
 					resultsDisplayed = true;
-					displayedIndex = saveIndex; 
+					displayedIndex = saveIndex;
+					
+					System.out.println("RichTest is done\n");
+					System.out.println("Predicate detection starts");
+					Computation[] comp = PartialOrderReader.parse();
+					for (int i = 0; i < 3; ++i) {
+						System.out.println("Evaluating partial order " + i);
+						try {
+							comp[i].setPredicate((Evaluable) unknown.newInstance());
+						} catch (InstantiationException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+						LatticeTraveler.lexTraverse(comp[i]);
+						System.out.println();
+					}
+					
 					if (clientServer == propertyParameters.Server) {
 						VariantGenerator.getInstance().saveRTResult(0, new RTResult(sw,i,collected));
 						System.out.println();
@@ -195,7 +223,7 @@ public final class RTDriver implements propertyParameters {
 					System.out.println();
 					System.out.println("Reachability Testing Total Executions:"+ VariantGenerator.getInstance().getTotalSequences());
 					System.out.println("Reachability Testing Total Sequences Collected:"+VariantGenerator.getInstance().getTotalCollected());
-					System.out.flush();  
+					System.out.flush();
 					System.exit(0);
 				}
 			}
