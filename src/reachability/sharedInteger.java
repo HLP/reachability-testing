@@ -384,9 +384,9 @@ public final class sharedInteger implements propertyParameters, monitorEventType
 	
 	// Yenjung
 	private void dumpInfo() {
-		System.out.println("<ID=" + getID() + ", value=" + value + ", TS="+ vectorTS + ">");
+		//System.out.println("<ID=" + getID() + ", value=" + value + ", TS="+ vectorTS + ">");
 		//PartialOrderDumper.getInstance().append("<ID=" + getID() + ", value=" + value + ", TS="+ vectorTS + ">\n");
-		PartialOrderDumper.getInstance().append(getName() + " " + value + " ");
+		PartialOrderDumper.getInstance().append(getID() + " " + value + " ");
 		PartialOrderDumper.getInstance().append(vectorTS.getIntegerTS(1) + " " + vectorTS.getIntegerTS(2) + "\n");
 	}
 }// end  sharedInteger
